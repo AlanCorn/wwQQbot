@@ -18,11 +18,17 @@ mkdir -p gsuid_data
 mkdir -p gsuid_cache
 mkdir -p gsuid_plugins
 
-# 如果是 root 运行（使用了 sudo），则修正目录权限为实际用户
+# 统一处理所有目录的权限（无论是否新建）
+# 1. 修正所有者：让宿主机用户可以编辑 (如果使用 sudo)
 if [ "$EUID" -eq 0 ] && [ "$CURRENT_UID" -ne 0 ]; then
-    echo "修正目录权限为 UID $CURRENT_UID..."
-    chown -R "$CURRENT_UID:$CURRENT_GID" data napcat ntqq gsuid_data gsuid_cache gsuid_plugins
+    echo "修正所有目录权限为 UID $CURRENT_UID..."
+    # 包含 gsuid_core 代码目录
+    chown -R "$CURRENT_UID:$CURRENT_GID" data napcat ntqq gsuid_data gsuid_cache gsuid_plugins gsuid_core
 fi
+
+# # 2. 放宽权限：确保容器内用户 (无论 UID 是多少) 都能写入
+# # 777 是最稳妥的方式，解决 "Permission denied"
+# chmod -R 777 gsuid_data gsuid_cache gsuid_plugins gsuid_core
 
 # 处理 gsuid_start 启动脚本
 if [ -d "gsuid_start" ]; then
@@ -50,12 +56,7 @@ if [ ! -d "gsuid_core" ]; then
         echo "克隆成功 (CNB)。"
     else
         echo "国内镜像源失败，尝试 GitHub..."
-        git clone --depth=1 --single-branch https://ghfast.top/https://github.com/Genshin-bots/gsuid_core.git gsuid_core
-    fi
-    
-    # 修正代码目录权限
-    if [ "$EUID" -eq 0 ] && [ "$CURRENT_UID" -ne 0 ]; then
-        chown -R "$CURRENT_UID:$CURRENT_GID" gsuid_core
+        git clone --depth=1 --single-branch https://github.com/Genshin-bots/gsuid_core.git gsuid_core
     fi
 else
     echo "gsuid_core 代码目录已存在，跳过克隆。"
