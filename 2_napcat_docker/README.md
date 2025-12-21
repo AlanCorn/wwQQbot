@@ -4,17 +4,21 @@
 
 ## 文件说明
 
-- `docker-compose.yml`: Docker Compose 配置文件，包含 NapCat 和 AstrBot 两个服务。
-- `run_napcat.sh`: 自动化启动脚本。
+- `docker-compose.yml`: Docker Compose 配置文件，包含 NapCat、AstrBot 和 Gsuid-Core 服务。
+- `run_napcat.sh`: 自动化启动脚本（包含 Gsuid-Core 代码自动克隆）。
 - `fix_docker_mirror.sh`: **[新增]** Docker 镜像加速修复脚本。如果在启动时遇到 `i/o timeout` 或下载慢的问题，请先运行此脚本。
 
 ## 目录结构
 
 脚本运行后会自动创建以下目录以持久化数据：
 
-- `./data`: AstrBot 的数据目录 (NapCat 也会访问)
+- `./data`: AstrBot 的数据目录
 - `./napcat/config`: NapCat 的配置文件
 - `./ntqq`: NapCat 的 QQ 登录数据
+- `./gsuid_core`: Gsuid-Core 源代码 (自动克隆)
+- `./gsuid_data`: Gsuid-Core 数据
+- `./gsuid_plugins`: Gsuid-Core 插件
+
 
 ## 遇到镜像下载超时怎么办？
 

@@ -34,6 +34,23 @@ services:
       - ./data:/AstrBot/data
     networks:
       - astrbot_network
+  gsuid-core:
+    image: mhmzx/poetry-runner:3.11-bookworm
+    restart: always
+    volumes:
+      - ./gsuid_core:/app
+      - ./gsuid_data:/app/data
+      - ./gsuid_start:/start
+      - ./gsuid_cache:/.cache
+      - ./gsuid_plugins:/app/gsuid_core/plugins
+    ports:
+      - 8765:8765
+    environment:
+      AUTO_VENV: 1
+      AUTO_VENV_NAME: gsuid_core
+      AUTO_PIP_INSTALL: 1
+    networks:
+      - astrbot_network
 networks:
   astrbot_network:
     driver: bridge
