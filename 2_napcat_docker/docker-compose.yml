@@ -6,6 +6,8 @@ services:
       - NAPCAT_UID=${NAPCAT_UID:-1000}
       - NAPCAT_GID=${NAPCAT_GID:-1000}
       - MODE=astrbot
+      - LANG=C.UTF-8  # 指定字符编码为UTF-8
+      - LC_ALL=C.UTF-8  # 强制统一所有本地化设置为UTF-8
     ports:
       - 6099:6099
     container_name: napcat
