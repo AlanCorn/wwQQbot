@@ -26,9 +26,10 @@ if [ "$EUID" -eq 0 ] && [ "$CURRENT_UID" -ne 0 ]; then
     chown -R "$CURRENT_UID:$CURRENT_GID" data napcat ntqq gsuid_data gsuid_cache gsuid_plugins gsuid_core
 fi
 
-# # 2. 放宽权限：确保容器内用户 (无论 UID 是多少) 都能写入
-# # 777 是最稳妥的方式，解决 "Permission denied"
-# chmod -R 777 gsuid_data gsuid_cache gsuid_plugins gsuid_core
+# # 2. 放宽权限：让组用户和其他用户可读写 (777 虽然暴力但有效，更优雅的方式是 775 或 ACL)
+# 这里使用 777 是为了最大限度兼容容器内可能使用的不同 UID (如 1000, 0, 或其他)
+# 如果您确定容器内用户 UID 与宿主机一致，可以使用 755 或 775
+chmod -R 777 gsuid_data gsuid_cache gsuid_plugins gsuid_core
 
 # 处理 gsuid_start 启动脚本
 if [ -d "gsuid_start" ]; then
