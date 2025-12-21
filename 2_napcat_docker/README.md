@@ -10,11 +10,12 @@
 
 ## 目录结构
 
-脚本运行后会自动创建以下目录以持久化数据：
+脚本运行后会自动创建以下目录以持久化数据（固化路径）：
 
 - `./data`: AstrBot 的数据目录
-- `./napcat/config`: NapCat 的配置文件
-- `./ntqq`: NapCat 的 QQ 登录数据
+- `./napcat/config`: NapCat 的配置文件 (对应容器内 `/app/napcat/config`)
+- `./ntqq`: NapCat 的 QQ 登录数据 (对应容器内 `/app/.config/QQ`)
+  > **注意**：登录后的 session 会保存在这里，重启容器无需再次扫码。
 - `./gsuid_core`: Gsuid-Core 源代码 (自动克隆)
 - `./gsuid_data`: Gsuid-Core 数据
 - `./gsuid_plugins`: Gsuid-Core 插件
