@@ -6,6 +6,7 @@
 
 - `docker-compose.yml`: Docker Compose 配置文件，包含 NapCat 和 AstrBot 两个服务。
 - `run_napcat.sh`: 自动化启动脚本。
+- `fix_docker_mirror.sh`: **[新增]** Docker 镜像加速修复脚本。如果在启动时遇到 `i/o timeout` 或下载慢的问题，请先运行此脚本。
 
 ## 目录结构
 
@@ -14,6 +15,17 @@
 - `./data`: AstrBot 的数据目录 (NapCat 也会访问)
 - `./napcat/config`: NapCat 的配置文件
 - `./ntqq`: NapCat 的 QQ 登录数据
+
+## 遇到镜像下载超时怎么办？
+
+如果您在运行启动脚本时遇到 `i/o timeout` 或下载卡住，请先执行以下命令配置国内加速镜像：
+
+```bash
+chmod +x fix_docker_mirror.sh
+./fix_docker_mirror.sh
+```
+
+脚本执行完毕并重启 Docker 后，再继续执行启动步骤。
 
 ## 如何使用
 
