@@ -1,13 +1,12 @@
 # docker-compose.yml
-# NAPCAT_UID=$(id -u) NAPCAT_GID=$(id -g) docker-compose -f ./compose/astrbot.yml up -d
 services:
   napcat:
     environment:
       - NAPCAT_UID=${NAPCAT_UID:-1000}
       - NAPCAT_GID=${NAPCAT_GID:-1000}
       - MODE=astrbot
-      - LANG=C.UTF-8  # 指定字符编码为UTF-8
-      - LC_ALL=C.UTF-8  # 强制统一所有本地化设置为UTF-8
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
     ports:
       - 6099:6099
     container_name: napcat
@@ -19,7 +18,7 @@ services:
       - ./ntqq:/app/.config/QQ
     networks:
       - astrbot_network
-    #mac_address: "02:42:ac:11:00:02"
+
   astrbot:
     environment:
       - TZ=Asia/Shanghai
@@ -28,29 +27,44 @@ services:
     restart: always
     ports:
       - "6185:6185"
-      #- "6195:6195"
-      #- "6199:6199"
     volumes:
       - ./data:/AstrBot/data
     networks:
       - astrbot_network
+
   gsuid-core:
     image: mhmzx/poetry-runner:3.11-bookworm
     restart: always
+    container_name: gsuid-core
+    # 移除 user 指令，让容器以 root 启动，然后通过 PUID/PGID 降权
+    # user: "${NAPCAT_UID:-1000}:${NAPCAT_GID:-1000}"
+    # 启动逻辑已包含在挂载的 /start 脚本中，无需覆盖 command
+    # command: ...
     volumes:
       - ./gsuid_core:/app
       - ./gsuid_data:/app/data
-      - ./gsuid_start:/start
+      # 精确挂载脚本文件到 /start，确保它是文件而不是目录
+      - ./gsuid_start/gsuid_start.sh:/start
+      # 兼容性挂载：同时挂载到 /.cache 和 HOME 下，防止部分工具硬编码路径
       - ./gsuid_cache:/.cache
+      - ./gsuid_cache:/app/data/.cache
       - ./gsuid_plugins:/app/gsuid_core/plugins
     ports:
       - 8765:8765
     environment:
+      # 指定 HOME 为可写目录，解决 .gitconfig 权限问题
+      HOME: /app/data
+      # 显式指定 XDG 缓存目录
+      XDG_CACHE_HOME: /app/data/.cache
       AUTO_VENV: 1
       AUTO_VENV_NAME: gsuid_core
       AUTO_PIP_INSTALL: 1
+      # 传递 UID/GID 环境变量供脚本参考 (可选)
+      PUID: ${NAPCAT_UID:-1000}
+      PGID: ${NAPCAT_GID:-1000}
     networks:
       - astrbot_network
+
 networks:
   astrbot_network:
     driver: bridge

@@ -26,27 +26,38 @@ if [ "$EUID" -eq 0 ] && [ "$CURRENT_UID" -ne 0 ]; then
     chown -R "$CURRENT_UID:$CURRENT_GID" data napcat ntqq gsuid_data gsuid_cache gsuid_plugins gsuid_core
 fi
 
-# # 2. 放宽权限：让组用户和其他用户可读写 (777 虽然暴力但有效，更优雅的方式是 775 或 ACL)
-# 这里使用 777 是为了最大限度兼容容器内可能使用的不同 UID (如 1000, 0, 或其他)
-# 如果您确定容器内用户 UID 与宿主机一致，可以使用 755 或 775
-chmod -R 777 gsuid_data gsuid_cache gsuid_plugins gsuid_core
+# # 2. 放宽权限：由于我们已经在 docker-compose.yml 中指定了 user: UID:GID，
+# 容器将以宿主机用户身份运行，因此不需要暴力 777，标准的 755 即可
+chmod -R 755 gsuid_data gsuid_cache gsuid_plugins gsuid_core
 
-# 处理 gsuid_start 启动脚本
-if [ -d "gsuid_start" ]; then
-    rm -rf gsuid_start
+# 处理 gsuid_start 启动脚本目录
+# 注意：之前版本可能创建了名为 gsuid_start 的文件，这里需要清理并改为目录
+if [ -f "gsuid_start" ]; then
+    rm -f gsuid_start
+fi
+if [ ! -d "gsuid_start" ]; then
+    mkdir -p gsuid_start
 fi
 
-echo "生成 Gsuid-Core 启动脚本 (gsuid_start)..."
-cat > gsuid_start <<EOF
+echo "生成 Gsuid-Core 启动脚本 (gsuid_start/gsuid_start.sh)..."
+cat > gsuid_start/gsuid_start.sh <<EOF
 #!/bin/bash
 set -e
+
+# 设置 HOME 环境变量，确保 git config 有权限写入
+export HOME=/app/data
+
+# 修复 git 目录权限问题 (dubious ownership)
+git config --global --add safe.directory '*'
 
 # 启动 Gsuid Core
 poetry run core
 EOF
-chmod +x gsuid_start
+chmod +x gsuid_start/gsuid_start.sh
+
+# 修正目录权限
 if [ "$EUID" -eq 0 ] && [ "$CURRENT_UID" -ne 0 ]; then
-    chown "$CURRENT_UID:$CURRENT_GID" gsuid_start
+    chown -R "$CURRENT_UID:$CURRENT_GID" gsuid_start
 fi
 
 # 检查并克隆 Gsuid-Core 代码
