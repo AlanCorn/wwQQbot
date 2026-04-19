@@ -59,6 +59,11 @@ services:
       AUTO_VENV: 1
       AUTO_VENV_NAME: gsuid_core
       AUTO_PIP_INSTALL: 0
+      # 网络代理配置
+      GSCORE_HTTP_PROXY: http://host.docker.internal:7890
+      GSCORE_HTTPS_PROXY: http://host.docker.internal:7890
+      http_proxy: http://host.docker.internal:7890
+      https_proxy: http://host.docker.internal:7890
       # 传递 UID/GID 环境变量供脚本参考 (可选)
       PUID: ${NAPCAT_UID:-1000}
       PGID: ${NAPCAT_GID:-1000}
