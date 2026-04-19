@@ -54,34 +54,15 @@ git config --global --add safe.directory '*'
 sed -i '/^-e \./d' /app/requirements.txt || true
 sed -i '/^--hash=/d' /app/requirements.txt || true
 
-# 配置 poetry 使用阿里云镜像源（正确的配置方式）
-poetry source add --priority=primary aliyun https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
-poetry config repositories.aliyun https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
+# 配置 uv 使用清华源
+export UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple/
 
-# 使用 poetry 安装依赖
-cd /app && poetry install --no-interaction
-
-# 设置 Playwright 下载主机为官方源（通过代理访问）
-export PLAYWRIGHT_DOWNLOAD_HOST=https://playwright.azureedge.net
-# 确保代理环境变量
-if [ -z "$http_proxy" ]; then
-    export http_proxy=http://host.docker.internal:7890
-    export https_proxy=http://host.docker.internal:7890
-fi
-
-# 用国内清华源安装依赖，解决网络超时问题
-echo "正在安装 Playwright 依赖（国内源加速）..."
-poetry run pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple playwright opencv-python fonttools
-
-echo "正在安装 Chromium 浏览器..."
-PLAYWRIGHT_BROWSERS_PATH=/app/data/.cache/ms-playwright poetry run playwright install chromium
-
-# 修复权限
-chmod -R 777 /app/data/.cache/ms-playwright
-chown -R ${PUID}:${PGID} /app/data/.cache/ms-playwright
+# 安装额外依赖（如果需要）
+echo "正在使用 uv 安装依赖..."
+cd /app && uv pip install --system playwright opencv-python fonttools 2>/dev/null || true
 
 # 启动 Gsuid Core
-poetry run core
+cd /app && uv run core
 EOF
 chmod +x gsuid_start/gsuid_start.sh
 
