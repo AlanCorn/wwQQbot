@@ -50,12 +50,13 @@ export HOME=/app/data
 # 修复 git 目录权限问题 (dubious ownership)
 git config --global --add safe.directory '*'
 
-# 修复 requirements.txt 中的哈希值冲突问题（移除 -e . 行）
+# 修复 requirements.txt 中的哈希值冲突问题（移除 -e . 行和哈希值）
 sed -i '/^-e \./d' /app/requirements.txt || true
+sed -i '/^--hash=/d' /app/requirements.txt || true
 
-# 配置 poetry 使用国内镜像源
-poetry config repositories.cnpypi https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
-poetry config preferred.cnpypi https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
+# 配置 poetry 使用阿里云镜像源（正确的配置方式）
+poetry source add --priority=primary aliyun https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
+poetry config repositories.aliyun https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
 
 # 使用 poetry 安装依赖
 cd /app && poetry install --no-interaction
