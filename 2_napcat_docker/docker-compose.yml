@@ -37,10 +37,10 @@ services:
     restart: always
     container_name: gsuid-core
     volumes:
-      - ./gsuid_core:/app
-      - ./gsuid_data:/app/data
+      - ./gsuid_core:/gsuid_core
+      - ./gsuid_data:/gsuid_core/data
       - ./gsuid_start/gsuid_start.sh:/start
-      - ./gsuid_plugins:/app/gsuid_core/plugins
+      - ./gsuid_plugins:/gsuid_core/gsuid_core/plugins
     ports:
       - 8765:8765
     environment:
