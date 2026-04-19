@@ -54,7 +54,7 @@ git config --global --add safe.directory '*'
 sed -i 's/-e .//g' /app/requirements.txt || true
 
 # 手动安装依赖
-pip install -r /app/requirements.txt --no-deps
+pip install -r /app/requirements.txt --no-deps -i https://mirrors.aliyun.com/pypi/simple/
 
 # 启动 Gsuid Core
 poetry run core
