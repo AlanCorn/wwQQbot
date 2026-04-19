@@ -59,6 +59,8 @@ services:
       AUTO_VENV: 1
       AUTO_VENV_NAME: gsuid_core
       AUTO_PIP_INSTALL: 0
+      PLAYWRIGHT_DOWNLOAD_HOST: https://mirrors.tencent.com/playwright
+      PLAYWRIGHT_BROWSERS_PATH: /app/data/.cache/ms-playwright
       # 传递 UID/GID 环境变量供脚本参考 (可选)
       PUID: ${NAPCAT_UID:-1000}
       PGID: ${NAPCAT_GID:-1000}

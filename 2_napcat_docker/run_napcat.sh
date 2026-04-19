@@ -61,6 +61,25 @@ poetry config repositories.aliyun https://mirrors.aliyun.com/pypi/simple/ 2>/dev
 # 使用 poetry 安装依赖
 cd /app && poetry install --no-interaction
 
+# 安装 Linux 系统依赖
+echo "正在安装 Linux 系统依赖..."
+apt-get update && apt-get install -y \
+    libglib2.0-0 libnss3 libnspr4 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 \
+    libcups2 libdrm2 libxcb1 libx11-6 libxcomposite1 libxdamage1 libxext6 \
+    libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 \
+    && rm -rf /var/lib/apt/lists/*
+
+# 用国内清华源安装依赖，解决网络超时问题
+echo "正在安装 Playwright 依赖（国内源加速）..."
+poetry run pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple playwright opencv-python fonttools
+
+echo "正在安装 Chromium 浏览器..."
+PLAYWRIGHT_BROWSERS_PATH=/app/data/.cache/ms-playwright poetry run playwright install chromium
+
+# 修复权限
+chmod -R 777 /app/data/.cache/ms-playwright
+chown -R ${PUID}:${PGID} /app/data/.cache/ms-playwright
+
 # 启动 Gsuid Core
 poetry run core
 EOF
