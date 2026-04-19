@@ -53,6 +53,9 @@ git config --global --add safe.directory '*'
 # 修复 requirements.txt 中的哈希值冲突问题
 sed -i 's/-e .//g' /app/requirements.txt || true
 
+# 手动安装依赖
+pip install -r /app/requirements.txt --no-deps
+
 # 启动 Gsuid Core
 poetry run core
 EOF

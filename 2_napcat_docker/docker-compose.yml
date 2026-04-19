@@ -58,7 +58,7 @@ services:
       XDG_CACHE_HOME: /app/data/.cache
       AUTO_VENV: 1
       AUTO_VENV_NAME: gsuid_core
-      AUTO_PIP_INSTALL: 1
+      AUTO_PIP_INSTALL: 0
       # 传递 UID/GID 环境变量供脚本参考 (可选)
       PUID: ${NAPCAT_UID:-1000}
       PGID: ${NAPCAT_GID:-1000}
