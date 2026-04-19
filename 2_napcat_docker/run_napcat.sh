@@ -69,6 +69,9 @@ apt-get update && apt-get install -y \
     libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
+# 设置 Playwright 下载主机为清华源
+export PLAYWRIGHT_DOWNLOAD_HOST=https://mirrors.tuna.tsinghua.edu.cn/playwright
+
 # 用国内清华源安装依赖，解决网络超时问题
 echo "正在安装 Playwright 依赖（国内源加速）..."
 poetry run pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple playwright opencv-python fonttools
