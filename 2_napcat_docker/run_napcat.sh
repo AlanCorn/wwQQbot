@@ -50,11 +50,11 @@ export HOME=/app/data
 # 修复 git 目录权限问题 (dubious ownership)
 git config --global --add safe.directory '*'
 
-# 修复 requirements.txt 中的哈希值冲突问题
-sed -i 's/-e .//g' /app/requirements.txt || true
+# 修复 requirements.txt 中的哈希值冲突问题（移除 -e . 行）
+sed -i '/^-e \./d' /app/requirements.txt || true
 
 # 移除哈希值检查（使用清华镜像源加速）
-pip install -r /app/requirements.txt --no-deps --no-hash -i https://mirrors.aliyun.com/pypi/simple/
+pip install -r /app/requirements.txt --no-deps -i https://mirrors.aliyun.com/pypi/simple/
 
 # 安装项目本身（使用清华镜像源）
 cd /app && poetry install --no-interaction -v -q 2>/dev/null || poetry install --no-interaction
