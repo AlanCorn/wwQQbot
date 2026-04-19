@@ -53,14 +53,15 @@ git config --global --add safe.directory '*'
 # 修复 requirements.txt 中的哈希值冲突问题（移除 -e . 行）
 sed -i '/^-e \./d' /app/requirements.txt || true
 
-# 移除哈希值检查（使用清华镜像源加速）
-pip install -r /app/requirements.txt --no-deps -i https://mirrors.aliyun.com/pypi/simple/
+# 配置 poetry 使用国内镜像源
+poetry config repositories.cnpypi https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
+poetry config preferred.cnpypi https://mirrors.aliyun.com/pypi/simple/ 2>/dev/null || true
 
-# 安装项目本身（使用清华镜像源）
-cd /app && poetry install --no-interaction -v -q 2>/dev/null || poetry install --no-interaction
+# 使用 poetry 安装依赖
+cd /app && poetry install --no-interaction
 
-# 启动 Gsuid Core（注意：是 gsuid 而不是 core）
-poetry run gsuid
+# 启动 Gsuid Core
+poetry run core
 EOF
 chmod +x gsuid_start/gsuid_start.sh
 
