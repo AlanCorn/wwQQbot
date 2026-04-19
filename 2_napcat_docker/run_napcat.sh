@@ -50,6 +50,9 @@ export HOME=/app/data
 # 修复 git 目录权限问题 (dubious ownership)
 git config --global --add safe.directory '*'
 
+# 修复 requirements.txt 中的哈希值冲突问题
+sed -i 's/-e .//g' /app/requirements.txt || true
+
 # 启动 Gsuid Core
 poetry run core
 EOF
