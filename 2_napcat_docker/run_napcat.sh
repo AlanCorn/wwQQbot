@@ -53,11 +53,14 @@ git config --global --add safe.directory '*'
 # 修复 requirements.txt 中的哈希值冲突问题
 sed -i 's/-e .//g' /app/requirements.txt || true
 
-# 手动安装依赖
-pip install -r /app/requirements.txt --no-deps -i https://mirrors.aliyun.com/pypi/simple/
+# 移除哈希值检查（使用清华镜像源加速）
+pip install -r /app/requirements.txt --no-deps --no-hash -i https://mirrors.aliyun.com/pypi/simple/
 
-# 启动 Gsuid Core
-poetry run core
+# 安装项目本身（使用清华镜像源）
+cd /app && poetry install --no-interaction -v -q 2>/dev/null || poetry install --no-interaction
+
+# 启动 Gsuid Core（注意：是 gsuid 而不是 core）
+poetry run gsuid
 EOF
 chmod +x gsuid_start/gsuid_start.sh
 
