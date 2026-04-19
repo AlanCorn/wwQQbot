@@ -61,16 +61,13 @@ poetry config repositories.aliyun https://mirrors.aliyun.com/pypi/simple/ 2>/dev
 # 使用 poetry 安装依赖
 cd /app && poetry install --no-interaction
 
-# 安装 Linux 系统依赖
-echo "正在安装 Linux 系统依赖..."
-apt-get update && apt-get install -y \
-    libglib2.0-0 libnss3 libnspr4 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 \
-    libcups2 libdrm2 libxcb1 libx11-6 libxcomposite1 libxdamage1 libxext6 \
-    libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 \
-    && rm -rf /var/lib/apt/lists/*
-
-# 设置 Playwright 下载主机为淘宝源
-export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/
+# 设置 Playwright 下载主机为官方源（通过代理访问）
+export PLAYWRIGHT_DOWNLOAD_HOST=https://playwright.azureedge.net
+# 确保代理环境变量
+if [ -z "$http_proxy" ]; then
+    export http_proxy=http://host.docker.internal:7890
+    export https_proxy=http://host.docker.internal:7890
+fi
 
 # 用国内清华源安装依赖，解决网络超时问题
 echo "正在安装 Playwright 依赖（国内源加速）..."
