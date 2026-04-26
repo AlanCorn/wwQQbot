@@ -46,6 +46,8 @@ set -e
 
 # 设置 HOME 环境变量，确保 git config 有权限写入
 export HOME=/app/data
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # 修复 git 目录权限问题 (dubious ownership)
 git config --global --add safe.directory '*'
