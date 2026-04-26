@@ -46,8 +46,6 @@ set -e
 
 # 设置 HOME 环境变量，确保 git config 有权限写入
 export HOME=/app/data
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # 修复 git 目录权限问题 (dubious ownership)
 git config --global --add safe.directory '*'
@@ -55,6 +53,18 @@ git config --global --add safe.directory '*'
 # 修复 requirements.txt 中的哈希值冲突问题（移除 -e . 行和哈希值）
 sed -i '/^-e \./d' /app/requirements.txt || true
 sed -i '/^--hash=/d' /app/requirements.txt || true
+
+# 安装 Node.js 22
+echo "正在安装 Node.js 22..."
+if ! command -v node &> /dev/null; then
+    # 安装 NodeSource 仓库
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    # 安装 node22
+    apt-get install -y nodejs
+    # 验证安装
+    node --version
+    npm --version
+fi
 
 # 配置 uv 使用清华源
 export UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple/
