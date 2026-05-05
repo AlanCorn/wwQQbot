@@ -1,4 +1,3 @@
-# docker-compose.yml
 services:
   napcat:
     environment:
@@ -10,7 +9,7 @@ services:
     ports:
       - 6099:6099
     container_name: napcat
-    restart: always
+    restart: unless-stopped
     image: mlikiowa/napcat-docker:latest
     volumes:
       - ./data:/AstrBot/data
@@ -18,23 +17,45 @@ services:
       - ./ntqq:/app/.config/QQ
     networks:
       - astrbot_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://localhost:6099/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
 
   astrbot:
     environment:
       - TZ=Asia/Shanghai
     image: soulter/astrbot:latest
     container_name: astrbot
-    restart: always
+    restart: unless-stopped
     ports:
       - "6185:6185"
     volumes:
       - ./data:/AstrBot/data
     networks:
       - astrbot_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://localhost:6185/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
 
   gsuid-core:
     image: docker.cnb.cool/gscore-mirror/gsuid_core:latest
-    restart: always
+    restart: unless-stopped
     container_name: gsuid-core
     volumes:
       - ./gsuid_core:/gsuid_core
@@ -48,6 +69,17 @@ services:
       HOME: /app/data
     networks:
       - astrbot_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://localhost:8765/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
 
 networks:
   astrbot_network:
